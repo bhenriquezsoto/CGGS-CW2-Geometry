@@ -59,12 +59,14 @@ int main()
                 cout<<"Running took too long! "<<endl;
             } else {
                 int where;
-                if ((GGT-G).cwiseAbs().maxCoeff(&where)<=tolerance){
-                    cout<<"G is good!"<<endl;
-                    pointGain++;
-                } else {
-                    cout<<"G("<<where<<")="<<G(where)<<", Ground-truth G("<<where<<")="<<GGT(where)<<endl;
-                }
+                if (G.size()!=GGT.size())
+                    std::cout<<"G sizes are wrong!"<<std::endl;
+                else if ((GGT-G).cwiseAbs().maxCoeff(&where)<=tolerance){
+                        cout<<"G is good!"<<endl;
+                        pointGain++;
+                    } else {
+                        cout<<"G("<<where<<")="<<G(where)<<", Ground-truth G("<<where<<")="<<GGT(where)<<endl;
+                    }
             }
             
             start = std::chrono::high_resolution_clock::now();
@@ -80,12 +82,14 @@ int main()
                 cout<<"Running took too long! "<<endl;
             } else {
                 int where;
-                if ((vorAreasGT-vorAreas).cwiseAbs().maxCoeff(&where)<=tolerance){
-                    cout<<"vorAreas is good!"<<endl;
-                    pointGain++;
-                } else {
-                    cout<<"vorAreas("<<where<<")="<<vorAreas(where)<<", Ground-truth vorAreas("<<where<<")="<<vorAreasGT(where)<<endl;
-                }
+                if (vorAreas.size()!=vorAreasGT.size())
+                    std::cout<<"vorAreas size is wrong!"<<std::endl;
+                else if ((vorAreasGT-vorAreas).cwiseAbs().maxCoeff(&where)<=tolerance){
+                        cout<<"vorAreas is good!"<<endl;
+                        pointGain++;
+                    } else {
+                        cout<<"vorAreas("<<where<<")="<<vorAreas(where)<<", Ground-truth vorAreas("<<where<<")="<<vorAreasGT(where)<<endl;
+                    }
             }
             
             start = std::chrono::high_resolution_clock::now();
@@ -102,12 +106,13 @@ int main()
                 cout<<"Running took too long! "<<endl;
             } else {
                 int rowIndex, colIndex;
-                if ((HnGT-Hn).cwiseAbs().maxCoeff(&rowIndex, &colIndex)<=tolerance){
-                    cout<<"Hn is good!"<<endl;
-                    pointGain++;
-                } else {
-                    cout<<"Hn("<<rowIndex<<","<<colIndex<<")="<<HnGT(rowIndex, colIndex)<<", Ground-truth Hn("<<rowIndex<<","<<colIndex<<")="<<Hn(rowIndex, colIndex)<<endl;
-                }
+                if (HnGT.size()!=Hn.size()) std::cout<<"Hn size is wrong!"<<std::endl;
+                else if ((HnGT-Hn).cwiseAbs().maxCoeff(&rowIndex, &colIndex)<=tolerance){
+                        cout<<"Hn is good!"<<endl;
+                        pointGain++;
+                    } else {
+                        cout<<"Hn("<<rowIndex<<","<<colIndex<<")="<<HnGT(rowIndex, colIndex)<<", Ground-truth Hn("<<rowIndex<<","<<colIndex<<")="<<Hn(rowIndex, colIndex)<<endl;
+                    }
             }
         }
     }
