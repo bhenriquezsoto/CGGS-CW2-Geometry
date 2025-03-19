@@ -71,6 +71,7 @@ int main()
             
             start = std::chrono::high_resolution_clock::now();
             compute_laplacian(V, F, E, EF, boundEMask, d0, W, vorAreas);
+            // See if weights are correct
             end = std::chrono::high_resolution_clock::now();
             duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             std::cout << "compute_laplacian() took " << (double)(duration.count())/1000.0 << " seconds to execute." << std::endl;
@@ -111,7 +112,7 @@ int main()
                         cout<<"Hn is good!"<<endl;
                         pointGain++;
                     } else {
-                        cout<<"Hn("<<rowIndex<<","<<colIndex<<")="<<HnGT(rowIndex, colIndex)<<", Ground-truth Hn("<<rowIndex<<","<<colIndex<<")="<<Hn(rowIndex, colIndex)<<endl;
+                        cout<<"Hn("<<rowIndex<<","<<colIndex<<")="<<Hn(rowIndex, colIndex)<<", Ground-truth Hn("<<rowIndex<<","<<colIndex<<")="<<HnGT(rowIndex, colIndex)<<endl;
                     }
             }
         }
