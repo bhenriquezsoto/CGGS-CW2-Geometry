@@ -18,7 +18,6 @@ void compute_mean_curvature_normal(
     const int nV = V.rows(), nF = F.rows();
 
     // 1) Mean-curvature normal = (L * V) / (2*area)
-    // Compute L * V first
     Hn = Eigen::MatrixXd::Zero(nV, 3);
     Eigen::MatrixXd LV = L * V;
 
@@ -36,8 +35,6 @@ void compute_mean_curvature_normal(
     
     for(int i = 0; i < nV; ++i) {
         Vec3 sum_normals = Vec3::Zero();
-        
-        // Use pre-computed adjacent faces
         for(int f : vertex_to_faces[i]) {
             // Calculate normal of face
             Vec3 v0 = V.row(F(f,0));

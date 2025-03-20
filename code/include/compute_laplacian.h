@@ -46,37 +46,23 @@ void compute_laplacian(const Eigen::MatrixXd& V,
     // Check if it is a boundary edge
     for (int i = 0; i < E.rows(); i++) {
         int idface1 = EF(i,0);
-        
-        int opposite_vertex = -1;
-        for (int j = 0; j < 3; j++) {
-            if (F(idface1, j) != E(i,0) && F(idface1, j) != E(i,1)) {
-                opposite_vertex = F(idface1, j);
-                break;
-            }
-        }
+        int opposite_vertex = EF(i,1);
         
         // Calculate vectors for the angle
-        Vector3d edge1 = V.row(E(i,0)) - V.row(opposite_vertex);
-        Vector3d edge2 = V.row(E(i,1)) - V.row(opposite_vertex);
+        Vector3d edge1 = V.row(F(idface1,(opposite_vertex+1)%3)) - V.row(F(idface1,opposite_vertex));
+        Vector3d edge2 = V.row(F(idface1,(opposite_vertex+2)%3)) - V.row(F(idface1,opposite_vertex));
         double angle = angle_between_vectors(edge1, edge2);
         double weight = 0.5 / std::tan(angle);
     
         if (boundEMask[i] == 0) {
             // Handle the second face for non-boundary edges
             int idface2 = EF(i,2);
-            
-            // Find the opposite vertex in the second face
-            opposite_vertex = -1;
-            for (int j = 0; j < 3; j++) {
-                if (F(idface2, j) != E(i,0) && F(idface2, j) != E(i,1)) {
-                    opposite_vertex = F(idface2, j);
-                    break;
-                }
-            }
-            
+            opposite_vertex = EF(i,3);
+
             // Calculate vectors for the second angle
-            edge1 = V.row(E(i,0)) - V.row(opposite_vertex);
-            edge2 = V.row(E(i,1)) - V.row(opposite_vertex);
+            edge1 = V.row(F(idface2,(opposite_vertex + 1) % 3)) - V.row(F(idface2,opposite_vertex));
+            edge2 = V.row(F(idface2,(opposite_vertex + 2) % 3)) - V.row(F(idface2,opposite_vertex));
+
             double angle2 = angle_between_vectors(edge1, edge2);
             double weight2 = 0.5 / std::tan(angle2);
             
