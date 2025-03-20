@@ -132,7 +132,7 @@ void create_edge_list(const Eigen::MatrixXi& F,
     for (int i=0;i<EHList.size();i++){
         E.row(i)<<H(EHList[i],0), H(EHList[i],1);
         EF(i,0)=EHList[i] / 3;
-        EF(i,1)=EHList[i] % 3;
+        EF(i,1)=((EHList[i] % 3) + 2 ) % 3;
         boundEMask(i) = (twinH(EHList[i]) == -1);
         if (boundEMask(i)==1){
             boundVMask(E(i,0))=boundEMask(i);
@@ -140,7 +140,7 @@ void create_edge_list(const Eigen::MatrixXi& F,
         }
         if (!boundEMask(i)){
             EF(i,2)=twinH(EHList[i]) / 3;
-            EF(i,3)=twinH(EHList[i]) % 3;
+            EF(i,3)=((twinH(EHList[i]) % 3) + 2) % 3;
         }
     }
     if (computeBoundaryLoop)
