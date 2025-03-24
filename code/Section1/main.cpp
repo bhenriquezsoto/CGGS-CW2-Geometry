@@ -28,7 +28,7 @@ VectorXd vorAreas, H;
 
 int main()
 {
-    readOFF(DATA_PATH "/cheburashka.off",V, F);
+    readOFF(DATA_PATH "/Concerthall.off",V, F);
     create_edge_list(F, E, EF, boundEMask, boundVMask, boundVertices);
 
     polyscope::init();
