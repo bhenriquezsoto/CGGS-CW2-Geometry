@@ -38,3 +38,6 @@ code/build/
 *.exe
 *.out
 *.app
+
+*.DS_Store
+*.vscode/*

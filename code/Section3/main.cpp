@@ -12,6 +12,7 @@
 #include "create_edge_list.h"
 #include "compute_laplacian.h"
 #include "tutte_parameterization.h"
+#include "lscm_parametrization.h"
 #include <chrono>
 #include <filesystem>
 
@@ -24,12 +25,17 @@ VectorXi boundEMask, boundVMask, boundVertices;
 MatrixXd V;
 SparseMatrix<double> d0, W;
 VectorXd vorAreas;
-MatrixXd UVBound, UV;
+MatrixXd UVBound, UV, UV_LSCM;
 
 
 
 int main()
 {
+    // Define DATA_PATH if not provided by build system
+    #ifndef DATA_PATH
+    #define DATA_PATH "."
+    #endif
+
     readOFF(DATA_PATH "/param/gargoyle2.off",V, F);
     create_edge_list(F, E, EF, boundEMask, boundVMask, boundVertices, true);
     
@@ -38,6 +44,7 @@ int main()
     compute_laplacian(V, F, E, EF, boundEMask, d0, W, vorAreas);
     double r = sqrt(vorAreas.sum()/M_PI);
     
+    // Compute Tutte Parameterization (with fixed circular boundary)
     auto start = std::chrono::high_resolution_clock::now();
     UVBound = compute_boundary_embedding(V, boundVertices, r);
     UV = compute_tutte_embedding(boundVertices, UVBound, d0, W);
@@ -45,12 +52,28 @@ int main()
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Tutte Parameterization took " << (double)(duration.count())/1000.0 << " seconds to execute." << std::endl;
     
+    // Compute LSCM Parameterization (with only two pinned vertices)
+    start = std::chrono::high_resolution_clock::now();
+    UV_LSCM = lscm_parametrization(V, F);
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "LSCM Parameterization took " << (double)(duration.count())/1000.0 << " seconds to execute." << std::endl;
+    
+    // Setup 3D visualization for Tutte parameterization
     MatrixXd UV3D = MatrixXd::Zero(UV.rows(), 3);
     UV3D.block(0,0,UV.rows(), 1) = UV.col(0);
     UV3D.block(0,2,UV.rows(), 1) = UV.col(1);
 
-    polyscope::SurfaceMesh* psParam = polyscope::registerSurfaceMesh("Parameterization Mesh", UV3D, F)->setEdgeWidth(1.0);
-    psMesh->addVertexParameterizationQuantity("UV Mapping", UV)->setCheckerSize(r/20.0)->setEnabled(true);
+    polyscope::SurfaceMesh* psParam = polyscope::registerSurfaceMesh("Tutte Parameterization", UV3D, F)->setEdgeWidth(1.0);
+    psMesh->addVertexParameterizationQuantity("Tutte UV Mapping", UV)->setCheckerSize(r/20.0)->setEnabled(true);
+    
+    // Setup 3D visualization for LSCM parameterization
+    MatrixXd UV_LSCM_3D = MatrixXd::Zero(UV_LSCM.rows(), 3);
+    UV_LSCM_3D.block(0,0,UV_LSCM.rows(), 1) = UV_LSCM.col(0);
+    UV_LSCM_3D.block(0,2,UV_LSCM.rows(), 1) = UV_LSCM.col(1);
+
+    polyscope::SurfaceMesh* psLSCMParam = polyscope::registerSurfaceMesh("LSCM Parameterization", UV_LSCM_3D, F)->setEdgeWidth(1.0);
+    psMesh->addVertexParameterizationQuantity("LSCM UV Mapping", UV_LSCM)->setCheckerSize(r/20.0);
     
     vector<RowVector3d> boundNodes;
     vector<RowVector2i> boundEdges;
